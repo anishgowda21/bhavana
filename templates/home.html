@@ -1,0 +1,49 @@
+{%extends 'base.html'%} {%block body%}
+
+{%if request.args.get('inputText') is not none%}
+{%set inputText = request.args.get("inputText")%}
+{%else%}
+{%set inputText = ''%}
+{%endif%}
+<div class="jumbotron">
+  <div class="card text-center">
+    <div class="card-header">
+        <b>The Neurons</b>
+      </div>
+    <div class="card-body">
+      <h5 class="card-title">Sentiment analysis</h5>
+      <form action="/analyse" method="get">
+        <div class="form-group">
+          <label for="InputText">Enter Text</label>
+          <input type="text"
+            value="{{inputText}}"
+            class="form-control"
+            name="inputText"
+            id="inputText"
+            required
+          ></input>
+        </div>
+        <div class="form-group form-check">
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+
+        <div class="card-text">
+            {%if data != {} and data.result!="error"%}
+            <div class="alert alert-success" role="alert">
+            <h5>Sentiment: {{data.result}}</h5>
+            <h5>Sentiment score: {{data.score}}%</h5>
+            </div>
+            {%elif data.result=="error"%}
+            <div class="alert alert-danger" role="alert">
+                Server Error!! , Please try again later
+              </div>
+            {%endif%}
+        </div>
+
+      
+    </div>
+  </div>
+</div>
+
+{% endblock %}
