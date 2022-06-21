@@ -7,6 +7,8 @@ app = Flask(__name__)
 token = os.getenv("Bearer")
 
 API_URL = os.getenv("API_URL")
+
+
 headers = {"Authorization": f"Bearer {token}"}
 
 # Analyse the sentence using api
@@ -17,7 +19,7 @@ def analyseText(text):
     response = requests.post(API_URL, headers=headers, json=payload)
 
     if "error" in response.json():
-        return "error", 0.0
+        return "error", "Model not loaded yet please wait for 15 seconds for the first time😊😊"
     else:
         data = response.json()[0]
         lab0 = data[0]["score"]
