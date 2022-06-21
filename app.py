@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 import requests
 import os
 app = Flask(__name__)
@@ -12,11 +12,16 @@ API_URL = os.getenv("API_URL")
 headers = {"Authorization": f"Bearer {token}"}
 
 # Analyse the sentence using api
+token = "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"
+API_URL = "https://api-inference.huggingface.co/models/Supreeth/Toxic-XLM_RoBERTa"
 
 
 def analyseText(text):
     payload = {"inputs": text}
-    response = requests.post(API_URL, headers=headers, json=payload)
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload)
+    except Exception as e:
+        return "error", str(e)
 
     if "error" in response.json():
         return "error", "Model not loaded yet please wait for 15 seconds for the first time😊😊"
@@ -35,21 +40,28 @@ def analyseText(text):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if request.method == "POST":
-        sentence = request.form["inputText"]
-        result = analyseText(sentence)
-        print(result)
-        return render_template("home.html", data={"result": result, "setence": sentence})
-
     return render_template("home.html", data={})
 
 
 @app.route("/analyse", methods=["GET"])
 def analyse():
+    data = {}
     sentence = request.args.get("inputText")
+    if not sentence:
+        data["result"] = "error"
+        data["message"] = "Please enter a sentence to analyse"
+        data["score"] = 0
+        return render_template("home.html", data=data)
     result, score = analyseText(sentence)
+    data["result"] = result
+
+    if result == "error":
+        data["message"] = score
+        score = 0
+
     score = round(score*100, 2)
-    return render_template("home.html", data={"result": result, "sentence": sentence, "score": score})
+    data["score"] = score
+    return render_template("home.html", data=data)
 
 
 if __name__ == "__main__":
