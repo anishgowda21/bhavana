@@ -3,7 +3,6 @@ from flask import Flask, redirect, render_template, request, url_for
 import requests
 import os
 from googletrans import Translator
-from textblob import TextBlob
 app = Flask(__name__)
 translater = Translator()
 
