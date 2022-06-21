@@ -12,8 +12,6 @@ API_URL = os.getenv("API_URL")
 headers = {"Authorization": f"Bearer {token}"}
 
 # Analyse the sentence using api
-token = "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"
-API_URL = "https://api-inference.huggingface.co/models/Supreeth/Toxic-XLM_RoBERTa"
 
 
 def analyseText(text):
