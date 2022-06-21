@@ -10,8 +10,6 @@ token = os.getenv("Bearer")
 
 API_URL = os.getenv("API_URL")
 
-token = "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"
-API_URL = "https://api-inference.huggingface.co/models/Supreeth/Toxic-XLM_RoBERTa"
 
 headers = {"Authorization": f"Bearer {token}"}
 
