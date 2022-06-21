@@ -1,15 +1,31 @@
+from fnmatch import translate
 from flask import Flask, redirect, render_template, request, url_for
 import requests
 import os
+from googletrans import Translator
+from textblob import TextBlob
 app = Flask(__name__)
-
+translater = Translator()
 
 token = os.getenv("Bearer")
 
 API_URL = os.getenv("API_URL")
 
+token = "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"
+API_URL = "https://api-inference.huggingface.co/models/Supreeth/Toxic-XLM_RoBERTa"
 
 headers = {"Authorization": f"Bearer {token}"}
+
+
+def checkAndTranslate(text):
+    try:
+        language = translater.detect(text)
+        if language.lang != "hi":
+            res = translater.translate(text, dest="hi", src=language.lang)
+            return "success", res.text
+        return text
+    except Exception as e:
+        return "error", text
 
 # Analyse the sentence using api
 
@@ -22,6 +38,7 @@ def analyseText(text):
         return "error", str(e)
 
     if "error" in response.json():
+        print(response.json())
         return "error", "Model not loaded yet please wait for 15 seconds for the first time😊😊"
     else:
         data = response.json()[0]
@@ -50,7 +67,10 @@ def analyse():
         data["message"] = "Please enter a sentence to analyse"
         data["score"] = 0
         return render_template("home.html", data=data)
-    result, score = analyseText(sentence)
+    sentence = checkAndTranslate(sentence)
+    if sentence[0] == "error":
+        data["message"] = "Note:There was an error while translating your sentence, Prediction may not be accurate!!"
+    result, score = analyseText(sentence[1])
     data["result"] = result
 
     if result == "error":
